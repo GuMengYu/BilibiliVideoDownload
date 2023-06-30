@@ -10,7 +10,7 @@
         <template v-if="item.type === 'status'">
           <span :class="['dot', loginStatus === 0 ? 'offline' : 'online']"></span>
           {{ loginStatusText[loginStatus] }}
-          <v-btn v-if="loginStatus === 0"  @click="loginModal.open()">
+          <v-btn v-if="loginStatus === 0"  @click="showLogin = true">
             <v-icon >{{ mdiLogout }}</v-icon>
           </v-btn>
 <!--          <a-popconfirm-->
@@ -48,10 +48,12 @@ import { formConfig, formItemLayout, settingData, settingRules, loginStatusText 
 import { Form } from 'ant-design-vue'
 import { FolderOutlined, LoginOutlined, LogoutOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import { store } from '../../../store'
+import { useAppStore } from '@/store/app'
 import { storeToRefs } from 'pinia'
 import {mdiLogout} from "@mdi/js";
 
 const { loginStatus } = storeToRefs(store.baseStore())
+const { showLogin } = storeToRefs(useAppStore())
 const { downloadPath, isDanmaku, isDelete, isFolder, isMerge, isSubtitle, downloadingMaxSize } = storeToRefs(store.settingStore())
 
 const loginModal = ref<any>(null)

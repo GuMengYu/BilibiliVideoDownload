@@ -9,6 +9,12 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Account: typeof import('./components/button/Account.vue')['default']
+    AccountExtendedFab: typeof import('./components/button/AccountExtendedFab.vue')['default']
+    AggregateExtendBtn: typeof import('./components/button/AggregateExtendBtn.vue')['default']
+    BackBtn: typeof import('./components/button/BackBtn.vue')['default']
+    BackToTop: typeof import('./components/button/BackToTop.vue')['default']
+    BFBtn: typeof import('./components/button/BFBtn.vue')['default']
     CheckUpdate: typeof import('./components/CheckUpdate/index.vue')['default']
     Heading: typeof import('./components/Heading.vue')['default']
     Headline: typeof import('./components/Headline.vue')['default']
@@ -16,6 +22,8 @@ declare module '@vue/runtime-core' {
     List: typeof import('./components/list/List.vue')['default']
     LoginModal: typeof import('./components/LoginModal/index.vue')['default']
     Menu: typeof import('./components/menu/Menu.vue')['default']
+    MinimalBtn: typeof import('./components/button/MinimalBtn.vue')['default']
+    ReloadBtn: typeof import('./components/button/ReloadBtn.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('./components/menu/Select.vue')['default']

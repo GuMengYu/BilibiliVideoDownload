@@ -1,41 +1,50 @@
 <template>
-  <a-modal
-    wrapClassName="custom-modal-padding"
-    :visible="visible"
-    :closable="false"
-    :maskClosable="false"
-    title="请登录Bilibili"
-    :okText="handleOkText()"
-    :okButtonProps="{ disabled: (activeTab === 1 && scanStatus !== 2 ) || (activeTab === 2 && !IPTSESSDATA) }"
-    cancelText="不登录"
-    @cancel="notLogin"
-    @ok="login">
-    <a-tabs v-model:activeKey="activeTab" centered>
-      <a-tab-pane :key="1" tab="扫码登录" force-render>
-        <div class="login-box">
-          <div class="qr-modal" v-if="!countDown">
-            <SyncOutlined class="refresh" @click="createQrcode" />
+  <v-dialog
+    persistent
+    v-model="showLogin"
+  >
+    <v-card color="surface">
+      <v-card-title>登录Bilibili</v-card-title>
+      <v-tabs v-model="activeTab">
+        <v-tab :value="1"> 扫码登录</v-tab>
+        <v-tab :value="2"> 手动输入</v-tab>
+      </v-tabs>
+      <v-window v-model="activeTab">
+        <v-window-item :value="1">
+          <div class="login-box">
+            <div class="qr-modal" v-if="!countDown">
+              <SyncOutlined class="refresh" @click="createQrcode" />
+            </div>
+            <img :src="imageBase64" alt="" />
           </div>
-          <img :src="imageBase64" alt="" />
-        </div>
-      </a-tab-pane>
-      <a-tab-pane :key="2" tab="手动输入">
-        <div class="login-box">
-          <a-input v-model:value="IPTSESSDATA" placeholder="输入你的SESSDATA">
-            <template #suffix>
-              <a-tooltip>
-                <template #title>
-                  <a @click="openBrowser('https://github.com/blogwy/BilibiliVideoDownload/wiki/%E8%8E%B7%E5%8F%96SESSDATA')">点击此处</a>查看如何获取SESSDATA
-                </template>
-                <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
-              </a-tooltip>
-            </template>
-          </a-input>
-        </div>
-      </a-tab-pane>
-    </a-tabs>
-    <div class="mt16 desc">注：软件登录后只会获取你的SESSDATA来用做下载，账号是普通账号下载1080P视频，大会员可以下载8K视频，不登录下载480P视频</div>
-  </a-modal>
+        </v-window-item>
+        <v-window-item :value="2">
+          <div class="login-box">
+            <a-input v-model:value="IPTSESSDATA" placeholder="输入你的SESSDATA">
+              <template #suffix>
+                <a-tooltip>
+                  <template #title>
+                    <a @click="openBrowser('https://github.com/blogwy/BilibiliVideoDownload/wiki/%E8%8E%B7%E5%8F%96SESSDATA')">点击此处</a>查看如何获取SESSDATA
+                  </template>
+                  <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
+                </a-tooltip>
+              </template>
+            </a-input>
+          </div>
+        </v-window-item>
+      </v-window>
+      <div class="mt-4 desc">注：软件登录后只会获取你的SESSDATA来用做下载，账号是普通账号下载1080P视频，大会员可以下载8K视频，不登录下载480P视频</div>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+
+        <v-btn color="primary" variant="text" rounded="pill" @click="notLogin"> 取消登录 </v-btn>
+        <v-btn color="primary" variant="flat" rounded="pill" @click="login">
+          {{ handleOkText() }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -45,9 +54,13 @@ import { InfoCircleOutlined, SyncOutlined } from '@ant-design/icons-vue'
 import qrCode from 'qrcode'
 import { checkLogin } from '../../core/bilibili'
 import { store } from '../../store'
+import { useAppStore } from "@/store/app";
+
 import {got} from "@/plugins/electron";
 import {ipcRenderer} from "electron";
+import {storeToRefs} from "pinia";
 
+const { showLogin } = storeToRefs(useAppStore())
 const visible = ref<boolean>(false)
 // 0 未扫码 1 已扫码 2 已确认
 const scanStatus = ref<number>(0)

@@ -19,6 +19,7 @@
     </v-toolbar>
     <v-divider />
     <div class="pa-3">
+      <account-extended-fab />
       <v-row dense>
         <v-col class="d-flex">
           <switch-card
@@ -60,6 +61,7 @@ import { useTheme } from 'vuetify'
 
 import { useAppStore } from '@/store/app'
 import { APPEARANCE, useSettingStore } from '@/store/settings'
+import AccountExtendedFab from "@/components/button/AccountExtendedFab.vue";
 
 const { t } = useI18n()
 const app = useAppStore()

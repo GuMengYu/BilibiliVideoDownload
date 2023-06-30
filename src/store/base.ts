@@ -18,7 +18,11 @@ export const baseStore = defineStore('base', {
     }
     return base
   },
-  getters: {},
+  getters: {
+    logged(state) {
+      return state.loginStatus !== 0
+    }
+  },
   actions: {
     setLoginStatus (status: 0 | 1 | 2) {
       this.loginStatus = status
