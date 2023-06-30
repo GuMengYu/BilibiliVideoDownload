@@ -1,17 +1,20 @@
 <template>
-  <a-config-provider :locale="zhCN">
-    <TitleBar
-      title="BilibiliVideoDownload"
-      :isBackground="false"
-      :isMinimizable="true"
-      :isMaximizable="false"
-      @onClose="onClose"
-      @onMinimize="onMinimize"
-    />
-    <TabBar />
-    <CheckUpdate ref="checkUpdate" />
-    <router-view/>
-  </a-config-provider>
+  <router-view v-slot="{ Component }">
+    <component :is="Component" />
+  </router-view>
+<!--  <a-config-provider :locale="zhCN">-->
+<!--    <TitleBar-->
+<!--      title="BilibiliVideoDownload"-->
+<!--      :isBackground="false"-->
+<!--      :isMinimizable="true"-->
+<!--      :isMaximizable="false"-->
+<!--      @onClose="onClose"-->
+<!--      @onMinimize="onMinimize"-->
+<!--    />-->
+<!--    <TabBar />-->
+<!--    <CheckUpdate ref="checkUpdate" />-->
+<!--    <router-view/>-->
+<!--  </a-config-provider>-->
 </template>
 
 <script setup lang="ts">
@@ -27,22 +30,30 @@ import { checkLogin, addDownload } from './core/bilibili'
 import { downloadDanmaku } from './core/danmaku'
 import { SettingData, TaskData, TaskList } from './type'
 import { sleep } from './utils'
+import { useAppStore } from '@/store/app'
+import {useIpcRenderer} from "@vueuse/electron";
+const ipcRenderer = useIpcRenderer()
+const appStore = useAppStore()
+appStore.init()
 
 dayjs.locale('zh-cn')
 const zhCN = ref(zh_CN)
 const checkUpdate = ref<any>(null)
 
+
 const onMinimize = () => {
-  window.electron.minimizeApp()
+  ipcRenderer.send('minimize-app')
 }
 
 const onClose = () => {
-  window.electron.closeApp()
+  ipcRenderer.send('close-app')
 }
 
 onMounted(() => {
   // 初始化pinia数据
-  window.electron.once('init-store', async ({ setting, taskList }: { setting: SettingData, taskList: TaskData[] }) => {
+
+  ipcRenderer.once('init-store', async (e, payload) => {
+    const {setting, taskList} = payload
     store.settingStore(pinia).setSetting(setting)
     const loginStatus = await checkLogin(store.settingStore(pinia).SESSDATA)
     store.baseStore(pinia).setLoginStatus(loginStatus)
@@ -56,14 +67,15 @@ onMounted(() => {
     if (taskId) store.taskStore(pinia).setRightTaskId(taskId)
   })
   // 监听下载进度
-  window.electron.on('download-video-status', async ({ id, status, progress }: { id: string, status: number, progress: number }) => {
+  ipcRenderer.on('download-video-status', async (e, { id, status, progress }: { id: string, status: number, progress: number }) => {
     const task = store.taskStore(pinia).getTask(id) ? JSON.parse(JSON.stringify(store.taskStore(pinia).getTask(id))) : null
     // 成功和失败 更新 pinia electron-store，减少正在下载数；检查taskList是否有等待中任务，有则下载
     if (task && (status === 0 || status === 5)) {
-      window.log.info(`${id} ${status}`)
+      console.info(`${id} ${status}`)
       let size = -1
       if (status === 0) {
-        size = await window.electron.getVideoSize(id)
+        const result = await ipcRenderer.invoke('get-video-size', id)
+        size = result.value as number
       }
       store.taskStore(pinia).setTask([{ ...task, status, progress, size }])
       store.baseStore(pinia).reduceDownloadingTaskCount(1)
@@ -78,7 +90,7 @@ onMounted(() => {
       for (const key in allowDownload) {
         const item = allowDownload[key]
         if (item.status === 1) {
-          window.electron.downloadVideo(item)
+          ipcRenderer.send('download-video', item)
           count += 1
         }
         await sleep(300)
@@ -91,11 +103,11 @@ onMounted(() => {
     }
   })
   // 下载弹幕
-  window.electron.on('download-danmuku', (cid: number, title: string, path: string) => {
+  ipcRenderer.on('download-danmuku', (e, cid: number, title: string, path: string) => {
     downloadDanmaku(cid, title, path)
   })
   // 检查软件更新
-  checkUpdate.value.checkUpdate()
+  // checkUpdate.value.checkUpdate()
 })
 </script>
 

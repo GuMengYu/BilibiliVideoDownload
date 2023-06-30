@@ -6,6 +6,7 @@ import { DanmakuConverterConfig, DanmakuConverter } from './danmaku-converter'
 import { XmlDanmaku } from './xml-danmaku'
 import UA from '../../assets/data/ua'
 import { store, pinia } from '../../store'
+import {ipcRenderer} from "electron";
 
 const gotConfig = {
   headers: {
@@ -63,7 +64,8 @@ export class JsonDanmaku {
   async fetchInfo () {
     let viewBuffer: any
     try {
-      viewBuffer = await window.electron.gotBuffer(`https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${this.cid}`, gotConfig)
+      viewBuffer = await ipcRenderer.invoke('got-buffer', `https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${this.cid}`, gotConfig)
+      // viewBuffer = await window.electron.gotBuffer(`https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=${this.cid}`, gotConfig)
     } catch (error) {
       throw new Error('获取弹幕信息失败')
     }
@@ -78,7 +80,8 @@ export class JsonDanmaku {
     const segments = await Promise.all(new Array(total).fill(0).map(async (_, index) => {
       let buffer: any
       try {
-        buffer = await window.electron.gotBuffer(`https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${this.cid}&segment_index=${index + 1}`, gotConfig)
+        buffer = await ipcRenderer.invoke('got-buffer', `https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=${this.cid}&segment_index=${index + 1}`, gotConfig)
+        // buffer = await window.electron.gotBuffer(, )
       } catch (error) {
         throw new Error('获取弹幕信息失败')
       }
@@ -138,7 +141,9 @@ export const downloadDanmaku = async (cid: number, title: string, path: string) 
   try {
     const danmaku = await new JsonDanmaku(cid).fetchInfo()
     const str = await convertToAssFromJson(danmaku, title)
-    window.electron.saveDanmukuFile(str, path)
+    ipcRenderer.send('save-danmuku-file', str, path)
+    //
+    // window.electron.saveDanmukuFile(str, path)
   } catch (error: any) {
     message.error(`弹幕下载错误：${error.message}`)
   }

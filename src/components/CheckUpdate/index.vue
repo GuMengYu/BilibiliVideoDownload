@@ -14,6 +14,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
+import {got, openBrowser} from "@/plugins/electron";
 const packageInfo = require('../../../package.json')
 
 const visible = ref<boolean>(false)
@@ -28,13 +29,13 @@ const cancel = () => {
 
 const handleOk = () => {
   console.log('handleOk')
-  window.electron.openBrowser(url.value)
+  openBrowser(url.value)
   visible.value = false
 }
 
 const checkUpdate = async () => {
   try {
-    const { body } = await window.electron.got('https://api.github.com/repos/blogwy/BilibiliVideoDownload/releases/latest', { responseType: 'json' })
+    const { body } = await got('https://api.github.com/repos/blogwy/BilibiliVideoDownload/releases/latest', { responseType: 'json' })
     newVersion.value = body.tag_name.substr(1)
     url.value = body.html_url
     updateContent.value = body.body

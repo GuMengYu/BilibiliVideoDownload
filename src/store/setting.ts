@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { isUndefined } from 'lodash'
 import { SettingData, SettingDataEasy } from '../type/index'
-
+import {setStore} from "@/plugins/electron";
 export const settingStore = defineStore('setting', {
   state: () => {
     const setting: SettingData = {
@@ -35,43 +35,43 @@ export const settingStore = defineStore('setting', {
   actions: {
     setDownloadPath (path: string) {
       this.downloadPath = path
-      window.electron.setStore('setting.downloadPath', path)
+      setStore('setting.downloadPath', path)
     },
     setSESSDATA (SESSDATA: string) {
       this.SESSDATA = SESSDATA
-      window.electron.setStore('setting.SESSDATA', SESSDATA)
+      setStore('setting.SESSDATA', SESSDATA)
     },
     setIsMerge (data: boolean) {
       this.isMerge = data
-      window.electron.setStore('setting.isMerge', data)
+      setStore('setting.isMerge', data)
     },
     setIsDelete (data: boolean) {
       this.isDelete = data
-      window.electron.setStore('setting.isDelete', data)
+      setStore('setting.isDelete', data)
     },
     setBfeId (bfeId: string) {
       this.bfeId = bfeId
-      window.electron.setStore('setting.bfeId', bfeId)
+      setStore('setting.bfeId', bfeId)
     },
     setIsSubtitle (data: boolean) {
       this.isSubtitle = data
-      window.electron.setStore('setting.isSubtitle', data)
+      setStore('setting.isSubtitle', data)
     },
     setIsDanmaku (data: boolean) {
       this.isDanmaku = data
-      window.electron.setStore('setting.isDanmaku', data)
+      setStore('setting.isDanmaku', data)
     },
     setIsFolder (data: boolean) {
       this.isFolder = data
-      window.electron.setStore('setting.isFolder', data)
+      setStore('setting.isFolder', data)
     },
     setIsCover (data: boolean) {
       this.isCover = data
-      window.electron.setStore('setting.isCover', data)
+      setStore('setting.isCover', data)
     },
     setDownloadingMaxSize (size: number) {
       this.downloadingMaxSize = size
-      window.electron.setStore('setting.downloadingMaxSize', size)
+      setStore('setting.downloadingMaxSize', size)
     },
     setSetting (setting: SettingDataEasy) {
       const allSetting = this.getSetting
@@ -81,7 +81,7 @@ export const settingStore = defineStore('setting', {
           this[key] = setting[key]
         }
       }
-      window.electron.setStore('setting', allSetting)
+      setStore('setting', allSetting)
     }
   }
 })

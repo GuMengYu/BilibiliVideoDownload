@@ -1,6 +1,6 @@
 <template>
   <div :class="['container fr', !taskList || !taskList.size ? 'ac jc' : 'bg-fff']">
-    <a-empty v-if="!taskList || !taskList.size" :image="require('../assets/images/no-data.png')">
+    <a-empty v-if="!taskList || !taskList.size">
       <template #description>
         <span class="text-active" style="font-weight: bold">暂无数据</span>
       </template>
@@ -60,6 +60,7 @@ import { store } from '../store'
 import { qualityMap } from '../assets/data/quality'
 import { checkUrl, checkUrlRedirect, parseHtml, getDownloadList, addDownload } from '../core/bilibili'
 import { sleep } from '../utils'
+import {ipcRenderer} from "electron";
 
 const route = useRoute()
 const { taskList, rightTask, taskListArray, rightTaskId } = storeToRefs(store.taskStore())
@@ -67,7 +68,8 @@ const selected = ref<string[]>([])
 const left = ref<any>(null)
 
 const openBrowser = (url: string) => {
-  window.electron.openBrowser(url)
+  openBrowser(url)
+
 }
 
 const formatDownloadStatus = (status: number, type: string) => {
@@ -222,7 +224,7 @@ onMounted(() => {
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .container{
   box-sizing: border-box;
   padding: 16px;
@@ -302,7 +304,5 @@ onMounted(() => {
     }
   }
 }
-:deep(.ant-progress-status-success .ant-progress-text){
-  color: @primary-color;
-}
+
 </style>

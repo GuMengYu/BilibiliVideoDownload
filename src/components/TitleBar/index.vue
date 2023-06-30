@@ -67,7 +67,7 @@ const getPlatform = () => {
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .title-bar{
   height: 28px;
   -webkit-app-region: drag;
@@ -76,13 +76,13 @@ const getPlatform = () => {
   align-items: center;
   color: #ffffff;
   &.bg{
-    background: @primary-color;
+    //background: @primary-color;
   }
   .block,
   .title{
     width: 33.33%;
     text-align: center;
-    color: @primary-color;
+    //color: @primary-color;
     font-weight: 800;
   }
   .btn-group{

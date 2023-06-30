@@ -121,7 +121,7 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .custom-input{
   cursor: pointer;
   :deep(.ant-input){

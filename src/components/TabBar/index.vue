@@ -23,13 +23,13 @@ const goRouter = (name: string): void => {
 }
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .tab{
   position: absolute;
   top: 38px;
   right: 8px;
   z-index: 99;
   cursor: pointer;
-  color: @primary-color;
+  //color: @primary-color;
 }
 </style>

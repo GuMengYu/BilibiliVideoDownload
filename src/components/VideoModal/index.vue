@@ -1,56 +1,51 @@
 <template>
-  <a-modal
-    wrapClassName="custom-modal-padding"
-    :visible="visible"
-    :confirmLoading="confirmLoading"
-    :okButtonProps="{ disabled: !(quality !== -1 && selected.length !== 0) }"
-    :closable="false"
-    :maskClosable="false"
-    title="当前视频信息"
-    okText="下载"
-    cancelText="取消"
-    @cancel="cancel"
-    @ok="handleDownload">
-    <div class="video-modal custom-scroll-bar">
-      <div class="video-info fr">
-        <div class="image">
-          <a-image :src="videoInfo.cover" />
-        </div>
-        <div class="content fc jsa pl16">
+  <v-card v-show="visible" class="bg-surfaceVariant" rounded="xl" variant="flat" width="90vw">
+    <div class="custom-scroll-bar">
+      <div class="d-flex gap-4">
+        <v-img max-height="200" style="aspect-ratio: 16/9" :src="videoInfo.cover" />
+
+        <div>
           <div class="text-active ellipsis-2" @click="openBrowser(videoInfo.url)">{{ videoInfo.title }}</div>
           <div class="ellipsis-1">up：<span v-for="(item, index) in videoInfo.up" :key="index" class="text-active mr8" @click="openBrowser(`https://space.bilibili.com/${item.mid}`)">{{item.name}}</span></div>
         </div>
       </div>
-      <div class="mt16">
-        选择清晰度：
-        <div class="mt8">
-          <a-radio-group v-model:value="quality">
-            <a-radio class="custom-radio" v-for="(item, index) in videoInfo.qualityOptions" :key="index" :value="item.value">
-              {{ item.label }}
-            </a-radio>
-          </a-radio-group>
+      <div class="mt-4">
+        <span class="font-weight-regular text-subtitle-1">选择清晰度：</span>
+        <div class="mt-2">
+          <v-radio-group v-model:value="quality">
+            <v-radio v-for="(item, index) in videoInfo.qualityOptions" :key="index" :label="item.label" :value="item.value">
+            </v-radio>
+          </v-radio-group>
         </div>
       </div>
       <div v-if="videoInfo.page && videoInfo.page.length > 1" class="fr ac jsb mt16">
         <div>这是一个多P视频，请选择</div>
         <div>
-          <a-checkbox @change="onAllSelectedChange">
+          <v-checkbox @change="onAllSelectedChange">
             全选
-          </a-checkbox>
+          </v-checkbox>
         </div>
       </div>
       <div v-if="videoInfo.page && videoInfo.page.length > 1" class="fr ac warp mt16">
         <div v-for="(item, index) in videoInfo.page" :key="index" :class="['video-item', selected.includes(item.page) ? 'active' : '']" @click="toggle(item.page)">
-          <a-tooltip>
+          <v-tooltip>
             <template #title>
               {{ item.title }}
             </template>
             <span class="ellipsis-1">{{ item.title }}</span>
-          </a-tooltip>
+          </v-tooltip>
         </div>
       </div>
     </div>
-  </a-modal>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="primary" variant="text" @click="cancel">
+        取消
+      </v-btn>
+      <v-btn color="primary" variant="text" @click="handleDownload"> 下载 </v-btn>
+    </v-card-actions>
+  </v-card>
+
 </template>
 
 <script lang="ts" setup>
@@ -60,8 +55,10 @@ import { store } from '../../store'
 import { getDownloadList, addDownload } from '../../core/bilibili'
 import { userQuality } from '../../assets/data/quality'
 import { VideoData } from '../../type'
-import { videoData } from '../../assets/data/default'
-import { sleep } from '../../utils'
+import { videoData } from '@/assets/data/default'
+import { sleep } from '@/utils'
+import {openBrowser} from "@/plugins/electron";
+import {mdiDownload, mdiRestore} from "@mdi/js";
 
 const visible = ref<boolean>(false)
 const confirmLoading = ref<boolean>(false)
@@ -133,20 +130,14 @@ const toggle = (page: number) => {
   }
 }
 
-const openBrowser = (url: string) => {
-  window.electron.openBrowser(url)
-}
-
 defineExpose({
   open
 })
 
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .video-modal{
-  height: 260px;
-  overflow-y: overlay;
   .video-info{
     height: 71.25px;
     .image{
@@ -185,8 +176,8 @@ defineExpose({
     user-select: none;
     &.active{
       color: #ffffff;
-      background: @primary-color;
-      border: 1px solid @primary-color;
+      //background: @primary-color;
+      //border: 1px solid @primary-color;
     }
   }
 }

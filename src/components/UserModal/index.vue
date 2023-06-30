@@ -19,7 +19,7 @@
 import { ref } from 'vue'
 import { ReloadOutlined } from '@ant-design/icons-vue'
 import CheckUpdate from '../CheckUpdate/index.vue'
-
+import {ipcRenderer} from 'electron'
 const checkUpdate = ref<any>(null)
 const packageInfo = require('../../../package.json')
 const visible = ref<boolean>(false)
@@ -31,14 +31,14 @@ const toogleVisible = () => {
   visible.value = !visible.value
 }
 const openBrowser = (url: string):void => {
-  window.electron.openBrowser(url)
+  openBrowser(url)
 }
 defineExpose({
   toogleVisible
 })
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .user{
   .avatar{
     width: 150px;

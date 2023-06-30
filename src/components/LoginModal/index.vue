@@ -45,6 +45,8 @@ import { InfoCircleOutlined, SyncOutlined } from '@ant-design/icons-vue'
 import qrCode from 'qrcode'
 import { checkLogin } from '../../core/bilibili'
 import { store } from '../../store'
+import {got} from "@/plugins/electron";
+import {ipcRenderer} from "electron";
 
 const visible = ref<boolean>(false)
 // 0 未扫码 1 已扫码 2 已确认
@@ -108,11 +110,11 @@ const hide = () => {
 }
 
 const openBrowser = (url: string):void => {
-  window.electron.openBrowser(url)
+  openBrowser(url)
 }
 
 const createQrcode = async () => {
-  const { body } = await window.electron.got('http://passport.bilibili.com/qrcode/getLoginUrl', { responseType: 'json' })
+  const { body } = await got('http://passport.bilibili.com/qrcode/getLoginUrl', { responseType: 'json' })
   const qrcode = await qrCode.toDataURL(body.data.url, {
     margin: 0,
     errorCorrectionLevel: 'H',
@@ -139,7 +141,7 @@ const checkScanStatus = (oauthKey: string) => {
   run(oauthKey)
   async function run (oauthKey: string) {
     if (!isCheck.value) return
-    const { body } = await window.electron.got('http://passport.bilibili.com/qrcode/getLoginInfo', {
+    const { body } = await got('http://passport.bilibili.com/qrcode/getLoginInfo', {
       method: 'POST',
       responseType: 'json',
       headers: {
@@ -172,7 +174,7 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .login-box{
   position: relative;
   display: flex;
@@ -195,7 +197,7 @@ defineExpose({
       transform: translate(-50%, -50%);
       z-index: 11;
       font-size: 24px;
-      color: @primary-color;
+      //color: @primary-color;
     }
   }
   img{

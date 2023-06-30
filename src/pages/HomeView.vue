@@ -1,27 +1,15 @@
 <template>
   <div class="container">
-    <div class="download-logo fr ac jc">
-      <img src="../assets/images/logo.png" alt="">
-    </div>
     <div class="download-box">
-      <a-input v-model:value="videoUrl" size="large" placeholder="请输入视频地址" @keydown.enter="download" @click.right="showContextmenu">
-        <template #addonAfter>
-          <ArrowDownOutlined v-if="!loading" :style="{fontSize: '18px', color: '#ffffff'}" @click="download" />
-          <LoadingOutlined v-else :style="{fontSize: '18px', color: '#ffffff'}" />
+      <v-text-field v-model="videoUrl" placeholder="请输入视频地址" @keydown.enter="download" @click.right="showContextmenu">
+        <template #append-inner>
+          <v-btn icon :loading="loading" @click="download" ><v-icon>{{ mdiArrowDown }}</v-icon></v-btn>
         </template>
-      </a-input>
+      </v-text-field>
     </div>
-    <div class="setting">
-      <SettingOutlined :style="{fontSize: '18px'}" @click="settingDrawer.open()" />
-    </div>
-    <div class="user">
-      <UserOutlined :style="{fontSize: '18px'}" @click="userModal.toogleVisible()" />
-    </div>
+    <video-modal ref="videoModal"  />
   </div>
-  <UserModal ref="userModal" />
-  <SettingDrawer ref="settingDrawer" />
-  <LoginModal ref="loginModal" />
-  <VideoModal ref="videoModal" />
+
 </template>
 
 <script lang="ts" setup>
@@ -34,6 +22,8 @@ import UserModal from '../components/UserModal/index.vue'
 import SettingDrawer from '../components/SettingDrawer/index.vue'
 import LoginModal from '../components/LoginModal/index.vue'
 import VideoModal from '../components/VideoModal/index.vue'
+import {mdiArrowDown, mdiCog} from "@mdi/js";
+import {ipcRenderer} from "electron";
 
 const videoUrl = ref<string | null>(null)
 const loading = ref<boolean>(false)
@@ -43,11 +33,11 @@ const loginModal = ref<any>(null)
 const videoModal = ref<any>(null)
 
 const showContextmenu = () => {
-  window.electron.showContextmenu('home')
+  ipcRenderer.invoke('show-context-menu', 'home')
+  // window.electron.showContextmenu('home')
 }
 
 const download = async () => {
-  console.log('download')
   loading.value = true
   if (!videoUrl.value) {
     message.warn('请输入视频地址')
@@ -88,7 +78,7 @@ const download = async () => {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .container{
   box-sizing: border-box;
   padding: 16px;
@@ -103,7 +93,7 @@ const download = async () => {
   .download-box{
     padding: 0px 64px;
     :deep(.ant-input-group-addon){
-      background: @primary-color;
+      //background: @primary-color;
       border: none;
     }
     .icon{
@@ -116,7 +106,7 @@ const download = async () => {
     left: 16px;
     bottom: 16px;
     z-index: 100;
-    color: @primary-color;
+    //color: @primary-color;
     font-size: 16px;
   }
   .user{
@@ -124,7 +114,7 @@ const download = async () => {
     right: 16px;
     bottom: 16px;
     z-index: 100;
-    color: @primary-color;
+    //color: @primary-color;
     font-size: 16px;
   }
 }

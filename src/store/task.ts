@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { TaskList, TaskData } from '../type'
 import { taskData } from '../assets/data/default'
+import {deleteStore, setStore} from "@/plugins/electron";
 
 export const taskStore = defineStore('task', {
   state: () => {
@@ -36,7 +37,7 @@ export const taskStore = defineStore('task', {
         this.taskList.set(task.id, task)
         // 修改electron-store
         const path = `taskList.${task.id}`
-        window.electron.setStore(path, task)
+        setStore(path, task)
       })
     },
     setTaskEasy (taskList: TaskData[]) {
@@ -49,7 +50,7 @@ export const taskStore = defineStore('task', {
         this.taskList.delete(id)
         // 修改electron-store
         const path = `taskList.${id}`
-        window.electron.deleteStore(path)
+        deleteStore(path)
       })
     },
     has (id: string) {

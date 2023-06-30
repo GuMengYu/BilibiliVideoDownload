@@ -1,0 +1,58 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "productName": 'BilibiliVideoDownload',
+  "appId": "com.blogwy.bilibilivideodownload",
+  "externals": ['ffmpeg-static', 'fluent-ffmpeg'],
+  "asar": true,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": [
+    "dist-electron",
+    "dist"
+  ],
+  "mac": {
+    "artifactName": "${productName}-${os}-${version}-${arch}.${ext}",
+    "target": [
+      {
+        "target":"dmg",
+        "arch": ["x64", "arm64", "universal"]
+      }
+    ],
+    "darkModeSupport": true,
+    "category": "public.app-category.other"
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "publisherName": 'appname',
+  },
+  "linux": {
+    "target": [
+      "AppImage",
+      "snap",
+      "deb",
+      "rpm",
+      "freebsd",
+      "pacman",
+      "tar.xz",
+    ],
+    "category": "Other"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  }
+}

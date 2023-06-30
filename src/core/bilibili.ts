@@ -5,6 +5,7 @@ import { customAlphabet } from 'nanoid'
 import alphabet from '../assets/data/alphabet'
 import { VideoData, Page, DownloadUrl, Subtitle, TaskData, Audio } from '../type'
 import { store, pinia } from '../store'
+import {got} from "@/plugins/electron";
 
 // 自定义uuid
 const nanoid = customAlphabet(alphabet, 16)
@@ -101,7 +102,7 @@ const saveResponseCookies = (cookies: string[]) => {
  * @returns 0: 游客，未登录 1：普通用户 2：大会员
  */
 const checkLogin = async (SESSDATA: string) => {
-  const { body } = await window.electron.got('https://api.bilibili.com/x/web-interface/nav', {
+  const { body } = await got('https://api.bilibili.com/x/web-interface/nav', {
     headers: {
       'User-Agent': `${UA}`,
       cookie: `SESSDATA=${SESSDATA}`
@@ -148,7 +149,7 @@ const checkUrlRedirect = async (videoUrl: string) => {
       }
     }
   }
-  const { body, redirectUrls } = await window.electron.got(params.videoUrl, params.config)
+  const { body, redirectUrls } = await got(params.videoUrl, params.config)
   const url = redirectUrls[0] ? redirectUrls[0] : videoUrl
   return {
     body,
@@ -285,7 +286,7 @@ const parseSS = async (html: string) => {
         }
       }
     }
-    const { body } = await window.electron.got(params.url, params.config)
+    const { body } = await got(params.url, params.config)
     return parseEP(body, params.url)
   } catch (error: any) {
     throw new Error(error)
@@ -303,7 +304,7 @@ const getAcceptQuality = async (cid: string, bvid: string) => {
     },
     responseType: 'json'
   }
-  const { body: { data: { accept_quality, dash: { video, audio } } }, headers: { 'set-cookie': responseCookies } } = await window.electron.got(
+  const { body: { data: { accept_quality, dash: { video, audio } } }, headers: { 'set-cookie': responseCookies } } = await got(
     `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=127&type=&otype=json&fourk=1&fnver=0&fnval=80&session=68191c1dc3c75042c6f35fba895d65b0`,
     config
   )
@@ -328,7 +329,7 @@ const getDownloadUrl = async (cid: number, bvid: string, quality: number) => {
     },
     responseType: 'json'
   }
-  const { body: { data: { dash } }, headers: { 'set-cookie': responseCookies } } = await window.electron.got(
+  const { body: { data: { dash } }, headers: { 'set-cookie': responseCookies } } = await got(
     `https://api.bilibili.com/x/player/playurl?cid=${cid}&bvid=${bvid}&qn=${quality}&type=&otype=json&fourk=1&fnver=0&fnval=80&session=68191c1dc3c75042c6f35fba895d65b0`,
     config
   )
@@ -351,7 +352,7 @@ const getSubtitle = async (cid: number, bvid: string) => {
     },
     responseType: 'json'
   }
-  const { body: { data: { subtitle } } } = await window.electron.got(`https://api.bilibili.com/x/player/v2?cid=${cid}&bvid=${bvid}`, config)
+  const { body: { data: { subtitle } } } = await got(`https://api.bilibili.com/x/player/v2?cid=${cid}&bvid=${bvid}`, config)
   const subtitleList: Subtitle[] = subtitle.subtitles ? subtitle.subtitles.map((item: any) => ({ title: item.lan_doc, url: item.subtitle_url })) : []
   return subtitleList
 }
