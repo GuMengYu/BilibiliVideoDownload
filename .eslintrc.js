@@ -2,15 +2,18 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    'vue/setup-compiler-macros': true
+    'vue/setup-compiler-macros': true,
   },
   extends: [
-    'plugin:vue/vue3-essential',
-    '@vue/standard',
-    '@vue/typescript/recommended'
+    'eslint:recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:vue/vue3-recommended',
+    'plugin:prettier/recommended',
   ],
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
   },
   ignorePatterns: ['src/core/xmlToAss.js'],
   rules: {
@@ -22,6 +25,6 @@ module.exports = {
     'no-prototype-builtins': 'off',
     'eol-last': 'off',
     'no-useless-escape': 'off',
-    'no-useless-constructor': 'off'
-  }
+    'no-useless-constructor': 'off',
+  },
 }
